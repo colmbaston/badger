@@ -1,0 +1,13 @@
+[package]
+name    = "badger-client"
+version = "0.1.0"
+authors = ["Colm Baston"]
+edition = "2018"
+
+[dependencies]
+winit  = "0.24.0"
+badger = { path = "../badger" }
+glm    = { package = "nalgebra-glm", version = "0.10.0" }
+
+[build-dependencies]
+shaderc = "0.7.0"

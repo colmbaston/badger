@@ -1,0 +1,10 @@
+stages:
+  - build
+
+rust-latest:
+  stage: build
+  image: rust:latest
+  script:
+    - apt-get update  --yes
+    - apt-get install --yes cmake
+    - cargo build --verbose
