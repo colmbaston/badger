@@ -160,12 +160,9 @@ fn event_handler<'a>(proxy : EventLoopProxy<ClientMessage<UniformData>>)
                     _ => ()
                 }
             },
-            Event::DeviceEvent { event, .. } =>
+            Event::DeviceEvent { event: DeviceEvent::MouseMotion { delta: (x, y), .. }, .. } =>
             {
-                if let DeviceEvent::MouseMotion { delta: (x, y), .. } = event
-                {
-                    if window_focused { camera.mouse_delta(*x as f32, *y as f32) }
-                }
+                if window_focused { camera.mouse_delta(*x as f32, *y as f32) }
             },
             _ => ()
         }

@@ -6,8 +6,7 @@ use ash::
     Entry,
     Instance,
     Device,
-    extensions::khr::{ Surface, Swapchain },
-    version::{ EntryV1_0, InstanceV1_0, DeviceV1_0 }
+    extensions::khr::{ Surface, Swapchain }
 };
 
 use winit::
@@ -189,7 +188,7 @@ impl<U> Engine<U>
                             },
                             ClientMessage::Render(uniforms) =>
                             {
-                                if let Err(err) = self.create_swapchain().and_then(|_| Ok(self.render(uniforms)?))
+                                if let Err(err) = self.create_swapchain().and_then(|_| self.render(uniforms))
                                 {
                                     eprintln!("{:?}", err);
                                     *control_flow = ControlFlow::Exit;
@@ -197,12 +196,9 @@ impl<U> Engine<U>
                             }
                         }
                     }
-                    Event::WindowEvent { event, .. } =>
+                    Event::WindowEvent { event: WindowEvent::Resized(_), .. } =>
                     {
-                        if let WindowEvent::Resized(_) = event
-                        {
-                            self.window.resized_flag = true;
-                        }
+                        self.window.resized_flag = true;
                     },
                     _ => ()
                 }
@@ -272,7 +268,7 @@ impl<U> Engine<U>
                     {
                         if !push_constant.is_empty()
                         {
-                            self.vulkan.device.loader.cmd_push_constants(buffer, swapchain.pipeline.layout, vk::ShaderStageFlags::VERTEX, 0, &push_constant);
+                            self.vulkan.device.loader.cmd_push_constants(buffer, swapchain.pipeline.layout, vk::ShaderStageFlags::VERTEX, 0, push_constant);
                         }
                         self.vulkan.device.loader.cmd_bind_vertex_buffers(buffer, 0, &[vertex_buffer.handle], &[0]);
                         self.vulkan.device.loader.cmd_bind_index_buffer(buffer, index_buffer.handle, 0, *index_type);
@@ -345,10 +341,10 @@ impl<U> Engine<U>
         let application_name = CString::new("Badger")?;
         let application_info = vk::ApplicationInfo::builder()
                               .engine_name(&engine_name)
-                              .engine_version(vk::make_version(0, 1, 0))
+                              .engine_version(vk::make_api_version(0, 0, 1, 0))
                               .application_name(&application_name)
-                              .application_version(vk::make_version(0, 1, 0))
-                              .api_version(vk::make_version(1, 0, 0))
+                              .application_version(vk::make_api_version(0, 0, 1, 0))
+                              .api_version(vk::make_api_version(0, 1, 0, 0))
                               .build();
 
         let instance_extensions = ash_window::enumerate_required_extensions(&window_handle)?
